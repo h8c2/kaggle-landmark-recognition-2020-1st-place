@@ -5,13 +5,13 @@ abs_path = os.path.dirname(__file__)
 
 args = {
     'model_path':'../models/',
-    'data_path':'/kaggle/input/landmark-recognition-2021/',
-    'data_path_valid':'/kaggle/input/google-landmark-2021-validation/',
+    'data_path':'E:/download/.kaggle/landmark-recognition-2021/',
+    'data_path_valid':'E:/download/.kaggle/google-landmark-2021-validation/',
     'valid_csv_fn':'valid.csv',
     'train_csv_fn':'train.csv',
 
     'gpus':'0,1',
-    'filter_warnings':True, 
+    'filter_warnings':True,
     'logger': 'neptune',
     'num_sanity_val_steps': 0,
 

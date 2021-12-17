@@ -26,7 +26,7 @@ import torch.distributed as dist
 import shutil
 import pickle
 
-def fix_row(row):
+def fix_row(row):#一行一个
     if len(str(row).split()) > 1:
         row = int(str(row).split()[0])
     return row
@@ -41,7 +41,7 @@ def setup():
     train["img_folder"] = args.img_path_train
     print("train shape", train.shape)
 
-    valid = pd.read_csv(args.data_path_2019 + args.valid_csv_fn)
+    valid = pd.read_csv(args.data_path_valid+ args.valid_csv_fn)
     valid["img_folder"] = args.img_path_val
     valid['landmarks'] = valid['landmarks'].apply(lambda x:fix_row(x))
     valid['landmark_id'] = valid['landmarks'].fillna(-1)
@@ -59,7 +59,7 @@ def setup():
         train = pd.concat([train, train_2], axis=0).reset_index(drop=True)
         print("train shape", train.shape)
         
-    train_filter = train[train.landmark_id.isin(valid.landmark_id)].reset_index()
+    train_filter = train[train.landmark_id.isin(valid.landmark_id)].reset_index() #选出在验证集的id
         
     print("trn filter len", len(train_filter))
 
