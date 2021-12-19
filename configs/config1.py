@@ -11,12 +11,12 @@ args = {
     'train_csv_fn':'train.csv',
     'checkpoint_path':'',
 
-    'gpus':'0',
+    'gpus':1,
     'filter_warnings':True, 
     'logger': 'tensorboard',
     'num_sanity_val_steps': 0,
 
-    'distributed_backend': 'ddp',
+    'distributed_backend': 'dp',
     'channels_last':False,
 
     'gradient_accumulation_steps':2,
@@ -53,7 +53,7 @@ args = {
     'optimizer': "sgd",
     'weight_decay':1e-4,
     'lr': 0.05,
-    'batch_size': 64,
+    'batch_size': 32,
     'max_epochs': 10,
     'scheduler': {"method":"cosine","warmup_epochs": 1},
     

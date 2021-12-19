@@ -37,11 +37,11 @@ def setup():
     print("Seed", args.seed)
     set_seed(args.seed)
 
-    train = pd.read_csv(args.data_path + args.train_csv_fn)
+    train = pd.read_csv(args.data_path + args.train_csv_fn).iloc[:160000,:]
     train["img_folder"] = args.img_path_train
     print("train shape", train.shape)
 
-    valid = pd.read_csv(args.data_path_valid+ args.valid_csv_fn)
+    valid = pd.read_csv(args.data_path_valid+ args.valid_csv_fn).iloc[:60000,:]
     valid["img_folder"] = args.img_path_val
     # valid['landmarks'] = valid['landmarks'].apply(lambda x:fix_row(x))
     # valid['landmark_id'] = valid['landmarks'].fillna(-1)
