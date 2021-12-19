@@ -10,10 +10,10 @@ args = {
     'valid_csv_fn':'valid.csv',
     'train_csv_fn':'train.csv',
     'checkpoint_path':'',
-    
+
     'gpus':'0',
     'filter_warnings':True, 
-    'logger': 'neptune',
+    'logger': 'tensorboard',
     'num_sanity_val_steps': 0,
 
     'distributed_backend': 'ddp',
