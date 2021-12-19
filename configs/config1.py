@@ -20,7 +20,7 @@ args = {
     'channels_last':False,
 
     'gradient_accumulation_steps':2,
-    'precision':16,
+    'precision':32,
     'sync_batchnorm':False,
     
     'seed':1138,
