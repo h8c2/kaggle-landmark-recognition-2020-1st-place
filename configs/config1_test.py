@@ -9,21 +9,22 @@ args = {
     'data_path_valid':'E:/download/.kaggle/google-landmark-2021-validation/',
     'valid_csv_fn':'valid.csv',
     'train_csv_fn':'train.csv',
+    'checkpoint_path':'E:/download/.kaggle/gluon_seresnext101_32x4d-cf52900d.pth',
     
-    'gpus':'0,1',
+    'gpus':'0',
     'filter_warnings':True,
-    'logger': 'neptune',
+    'logger': 'tensorboard',
     'num_sanity_val_steps': 0,
 
     'distributed_backend': 'ddp',
     'channels_last':False,
 
     'gradient_accumulation_steps':2,
-    'precision':16,
+    'precision':32,#16 for mix precision
     'sync_batchnorm':False,
     
     'seed':1138,
-    'num_workers':4,
+    'num_workers':2,
     'save_weights_only':True,
 
     'p_trainable': True,

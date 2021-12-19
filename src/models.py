@@ -46,9 +46,10 @@ class GeM(nn.Module):
 class Backbone(nn.Module):
 
     
-    def __init__(self, name='resnet18', pretrained=True):
+    def __init__(self, name='resnet18', pretrained=True,checkpoint_path=''):
         super(Backbone, self).__init__()
-        self.net = timm.create_model(name, pretrained=pretrained)
+        print(checkpoint_path)
+        self.net = timm.create_model(name, pretrained=pretrained,checkpoint_path=checkpoint_path)
         
         if 'regnet' in name:
             self.out_features = self.net.head.fc.in_features
@@ -79,7 +80,7 @@ class Net(nn.Module):
         super(Net, self).__init__()
         
         self.args = args
-        self.backbone = Backbone(args.backbone, pretrained=pretrained)
+        self.backbone = Backbone(args.backbone, pretrained=pretrained,checkpoint_path=args.checkpoint_path)
         
         if args.pool == "gem":
             self.global_pool = GeM(p_trainable=args.p_trainable)

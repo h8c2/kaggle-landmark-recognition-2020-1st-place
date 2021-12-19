@@ -9,8 +9,9 @@ args = {
     'data_path_valid':'/kaggle/input/google-landmark-2021-validation/',
     'valid_csv_fn':'valid.csv',
     'train_csv_fn':'train.csv',
-
-    'gpus':'0,1',
+    'checkpoint_path':'',
+    
+    'gpus':'0',
     'filter_warnings':True, 
     'logger': 'neptune',
     'num_sanity_val_steps': 0,

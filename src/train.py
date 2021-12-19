@@ -43,9 +43,9 @@ def setup():
 
     valid = pd.read_csv(args.data_path_valid+ args.valid_csv_fn)
     valid["img_folder"] = args.img_path_val
-    valid['landmarks'] = valid['landmarks'].apply(lambda x:fix_row(x))
-    valid['landmark_id'] = valid['landmarks'].fillna(-1)
-    valid['landmarks'].fillna('',inplace=True)
+    # valid['landmarks'] = valid['landmarks'].apply(lambda x:fix_row(x))
+    # valid['landmark_id'] = valid['landmarks'].fillna(-1)
+    # valid['landmarks'].fillna('',inplace=True)
     valid['landmark_id'] = valid['landmark_id'].astype(int)
 
     
@@ -393,7 +393,7 @@ if __name__ == '__main__':
     ckpt_save_path = experiment_path + '/ckpt/'
     if not os.path.exists(ckpt_save_path):
         os.makedirs(ckpt_save_path)
-    ckpt = ModelCheckpoint(ckpt_save_path, monitor='val_gap_pp', verbose=False, mode='max',period=1, save_top_k=1, save_last=True, save_weights_only=args.save_weights_only)
+    ckpt = ModelCheckpoint(ckpt_save_path, monitor='val_gap_pp', verbose=False, mode='max', save_top_k=1, save_last=True, save_weights_only=args.save_weights_only)
 
     trainer = Trainer(gpus=args.gpus, 
                               logger=logger, 
@@ -403,10 +403,9 @@ if __name__ == '__main__':
                               default_root_dir=experiment_path,
                               checkpoint_callback=ckpt, 
                               precision=args.precision,
-                              early_stop_callback=None,
                               num_sanity_val_steps=args.num_sanity_val_steps,
                               gradient_clip_val=5.0,
-                              distributed_backend = args.distributed_backend,
+                              strategy = args.distributed_backend,
                               sync_batchnorm = args.sync_batchnorm)
 
     model = Model(args, tr_dl, val_dl, tr_filter_dl, train_filter=train_filter, metric_crit=metric_crit, metric_crit_val=metric_crit_val, allowed_classes=allowed_classes)
