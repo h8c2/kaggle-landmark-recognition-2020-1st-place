@@ -74,8 +74,9 @@ def setup():
     #         train_2["landmark_id"] = train_2["landmark_id"] + train["landmark_id"].max()
     #     train = pd.concat([train, train_2], axis=0).reset_index(drop=True)
     #     print("train shape", train.shape)
-        
+    print("train_len",len(train)," valid_len",len(valid))
     train_filter = train[train.landmark_id.isin(valid.landmark_id)].reset_index(drop=True) #选出在验证集的id
+    print("trn filter len now", len(train_filter))
     train_filter = train_filter
     train = pd.concat([train[~train.landmark_id.isin(train_filter.landmark_id)].iloc[:72000,],train_filter]).reset_index(drop=True)
     valid = pd.concat([valid[~valid.landmark_id.isin(train_filter.landmark_id)].iloc[:8000,],train_filter]).reset_index(drop=True)
