@@ -40,7 +40,7 @@ def num_filter(x):
         count_dict[x]=count_dict[x]+1
     else:
         count_dict[x]=1
-    if count_dict[x] > 20:
+    if count_dict[x] > 16:
         return False
     else :
         return True
@@ -77,9 +77,9 @@ def setup():
         
     train_filter = train[train.landmark_id.isin(valid.landmark_id)].reset_index(drop=True) #选出在验证集的id
         
-    train_filter = train_filter.iloc[:256,:]
-    train = pd.concat([train[~train.landmark_id.isin(train_filter.landmark_id)].iloc[:256,],train_filter]).reset_index(drop=True)
-    valid = pd.concat([valid[~valid.landmark_id.isin(train_filter.landmark_id)].iloc[:256,],train_filter]).reset_index(drop=True)
+    train_filter = train_filter[:20000,:]
+    train = pd.concat([train[~train.landmark_id.isin(train_filter.landmark_id)].iloc[:80000,:],train_filter]).reset_index(drop=True)
+    valid = pd.concat([valid[~valid.landmark_id.isin(train_filter.landmark_id)].iloc[:20000,:],train_filter]).reset_index(drop=True)
     train["img_folder"] = args.img_path_train
     train_filter["img_folder"] = args.img_path_train
     print("train shape", train.shape)
