@@ -326,8 +326,8 @@ class Model(pl.LightningModule):
 
         val_loss_mean = np.sum(out_val["val_loss"])
 
-        print(val_score,val_score_landmarks,val_score_pp,val_score_landmarks_pp,val_loss_mean)
-        print("Embeddings: ", out_val["embeddings"], out_tr_filter["embeddings"])
+#         print(val_score,val_score_landmarks,val_score_pp,val_score_landmarks_pp,val_loss_mean)
+#         print("Embeddings: ", out_val["embeddings"], out_tr_filter["embeddings"])
         vals, inds = get_topk_cossim(out_val["embeddings"], out_tr_filter["embeddings"], batchsize=args.batch_size, k=1, device=device)
         vals = vals.data.cpu().numpy().reshape(-1)
         inds = inds.data.cpu().numpy().reshape(-1)
