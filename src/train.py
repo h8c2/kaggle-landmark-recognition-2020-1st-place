@@ -40,7 +40,7 @@ def num_filter(x):
         count_dict[x]=count_dict[x]+1
     else:
         count_dict[x]=1
-    if count_dict[x] > 20:
+    if count_dict[x] > 18:
         return False
     else :
         return True
@@ -55,7 +55,7 @@ def setup():
     count_dict={}
     train=train[train['landmark_id'].apply(num_filter).to_numpy()].reset_index(drop=True)
 
-
+    count_dict={}
     valid = pd.read_csv(args.data_path_valid+ args.valid_csv_fn)
     valid=valid[valid['landmark_id'].apply(num_filter).to_numpy()].reset_index(drop=True)
     
@@ -77,8 +77,8 @@ def setup():
         
     train_filter = train[train.landmark_id.isin(valid.landmark_id)].reset_index(drop=True) #选出在验证集的id
     train_filter = train_filter
-    train = pd.concat([train[~train.landmark_id.isin(train_filter.landmark_id)].iloc[:80000,],train_filter]).reset_index(drop=True)
-    valid = pd.concat([valid[~valid.landmark_id.isin(train_filter.landmark_id)].iloc[:20000,],train_filter]).reset_index(drop=True)
+    train = pd.concat([train[~train.landmark_id.isin(train_filter.landmark_id)].iloc[:72000,],train_filter]).reset_index(drop=True)
+    valid = pd.concat([valid[~valid.landmark_id.isin(train_filter.landmark_id)].iloc[:8000,],train_filter]).reset_index(drop=True)
     train["img_folder"] = args.img_path_train
     train_filter["img_folder"] = args.img_path_train
     print("train shape", train.shape)
