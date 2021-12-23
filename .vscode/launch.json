@@ -1,0 +1,18 @@
+{
+
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: train.py",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "cwd": "${fileDirname}",
+            "args": [
+                "--config",
+                "config1_test"
+            ]
+        }
+    ]
+}

@@ -120,13 +120,14 @@ class Net(nn.Module):
     def forward(self, input_dict, get_embeddings=False, get_attentions=False):
 
         x = input_dict['input']
+        # print("input",x)
         x = self.backbone(x)
-        
+        # print("after backbone",x)
         x = self.global_pool(x)
         x = x[:,:,0,0]
-        
+        # print("after pool",x)
         x = self.neck(x)
-
+        # print("embedding",x)
         logits = self.head(x)
         
         if get_embeddings:

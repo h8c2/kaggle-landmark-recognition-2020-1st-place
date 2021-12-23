@@ -11,8 +11,12 @@ https://github.com/cvdfoundation/google-landmark
 
 To train a model, please run ```src/train.py``` with a config file as flag:
 ```
-python train.py --config config1
+python train.py --config config1_test
 ```
+
+                              strategy = args.distributed_backend,
+
+
 
 You need to adjust data paths and other parameters in respective config file to make it work.
 

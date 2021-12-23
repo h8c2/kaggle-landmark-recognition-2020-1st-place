@@ -16,10 +16,10 @@ args = {
     'logger': 'tensorboard',
     'num_sanity_val_steps': 0,
 
-    'distributed_backend': 'dp',
+    'distributed_backend': '',
     'channels_last':False,
 
-    'gradient_accumulation_steps':2,
+    'gradient_accumulation_steps':1,
     'precision':32,
     'sync_batchnorm':False,
     
@@ -53,7 +53,7 @@ args = {
     'optimizer': "sgd",
     'weight_decay':1e-4,
     'lr': 0.05,
-    'batch_size': 32,
+    'batch_size': 16,
     'max_epochs': 10,
     'scheduler': {"method":"cosine","warmup_epochs": 1},
     

@@ -16,7 +16,7 @@ args = {
     'logger': 'tensorboard',
     'num_sanity_val_steps': 0,
 
-    'distributed_backend': 'dp',
+    'distributed_backend': '',
     'channels_last':False,
 
     'gradient_accumulation_steps':2,
@@ -24,7 +24,7 @@ args = {
     'sync_batchnorm':False,
     
     'seed':1138,
-    'num_workers':2,
+    'num_workers':1,
     'save_weights_only':True,
 
     'p_trainable': True,

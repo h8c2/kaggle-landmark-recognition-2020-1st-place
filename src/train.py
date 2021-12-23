@@ -26,41 +26,64 @@ import torch.distributed as dist
 import shutil
 import pickle
 
+count_dict={}
+
 def fix_row(row):#一行一个
     if len(str(row).split()) > 1:
         row = int(str(row).split()[0])
     return row
 
+def num_filter(x):
+    if x == -1:
+        return True
+    if x in count_dict:
+        count_dict[x]=count_dict[x]+1
+    else:
+        count_dict[x]=1
+    if count_dict[x] > 20:
+        return False
+    else :
+        return True
+    
 def setup():
     if args.seed == -1:
         args.seed = np.random.randint(0,1000000)
     print("Seed", args.seed)
     set_seed(args.seed)
 
-    train = pd.read_csv(args.data_path + args.train_csv_fn).iloc[:160000,:]
-    train["img_folder"] = args.img_path_train
-    print("train shape", train.shape)
+    train = pd.read_csv(args.data_path + args.train_csv_fn)
+    count_dict={}
+    train=train[train['landmark_id'].apply(num_filter).to_numpy()].reset_index(drop=True)
 
-    valid = pd.read_csv(args.data_path_valid+ args.valid_csv_fn).iloc[:60000,:]
-    valid["img_folder"] = args.img_path_val
+
+    valid = pd.read_csv(args.data_path_valid+ args.valid_csv_fn)
+    valid=valid[valid['landmark_id'].apply(num_filter).to_numpy()].reset_index(drop=True)
+    
     # valid['landmarks'] = valid['landmarks'].apply(lambda x:fix_row(x))
     # valid['landmark_id'] = valid['landmarks'].fillna(-1)
     # valid['landmarks'].fillna('',inplace=True)
-    valid['landmark_id'] = valid['landmark_id'].astype(int)
+    # valid['landmark_id'] = valid['landmark_id'].astype(int)
 
-    
 
-    if args.data_path_2 is not None:
-        train_2 = pd.read_csv(args.data_path_2 + args.train_2_csv_fn)
-        train_2["img_folder"] = args.img_path_train_2
-        if "gldv1" in args.data_path_2:
-            print("gldv1")
-            train_2["landmark_id"] = train_2["landmark_id"] + train["landmark_id"].max()
-        train = pd.concat([train, train_2], axis=0).reset_index(drop=True)
-        print("train shape", train.shape)
+
+    # if args.data_path_2 is not None:
+    #     train_2 = pd.read_csv(args.data_path_2 + args.train_2_csv_fn)
+    #     train_2["img_folder"] = args.img_path_train_2
+    #     if "gldv1" in args.data_path_2:
+    #         print("gldv1")
+    #         train_2["landmark_id"] = train_2["landmark_id"] + train["landmark_id"].max()
+    #     train = pd.concat([train, train_2], axis=0).reset_index(drop=True)
+    #     print("train shape", train.shape)
         
-    train_filter = train[train.landmark_id.isin(valid.landmark_id)].reset_index() #选出在验证集的id
+    train_filter = train[train.landmark_id.isin(valid.landmark_id)].reset_index(drop=True) #选出在验证集的id
         
+    train_filter = train_filter.iloc[:32,:]
+    train = pd.concat([train[~train.landmark_id.isin(train_filter.landmark_id)].iloc[:48,],train_filter]).reset_index(drop=True)
+    valid = pd.concat([valid[~valid.landmark_id.isin(train_filter.landmark_id)].iloc[:48,],train_filter]).reset_index(drop=True)
+    train["img_folder"] = args.img_path_train
+    train_filter["img_folder"] = args.img_path_train
+    print("train shape", train.shape)
+    valid["img_folder"] = args.img_path_val
     print("trn filter len", len(train_filter))
 
     landmark_ids = np.sort(train.landmark_id.unique())
@@ -84,9 +107,9 @@ def setup():
         class_weights = None
     
     valid['target'] = valid['landmark_id'].apply(lambda x: landmark_id2class_val.get(x,-1))
-    valid = valid[valid.target > -1].reset_index(drop=True)
+    valid = valid[valid.target > -1].reset_index(drop=True)#丢掉不在trian 内的landmark
 
-    allowed_classes = np.sort(valid[valid.target!=args.n_classes].target.unique())
+    allowed_classes = np.sort(valid[valid.target!=args.n_classes].target.unique()) #在 valid内能验证的target 除landmark
 
     train_filter['target'] = train_filter['landmark_id'].apply(lambda x: landmark_id2class_val.get(x,-1))
 
@@ -109,7 +132,8 @@ class Model(pl.LightningModule):
 
         self.params = hparams
         if args.distributed_backend == "ddp":
-            self.num_train_steps = math.ceil(len(self.tr_dl) / (len(args.gpus.split(','))*args.gradient_accumulation_steps) )
+            # self.num_train_steps = math.ceil(len(self.tr_dl) / (len(args.gpus.split(','))*args.gradient_accumulation_steps) )
+            self.num_train_steps = math.ceil(len(self.tr_dl) / args.gradient_accumulation_steps )
         else:
             self.num_train_steps = math.ceil(len(self.tr_dl) / args.gradient_accumulation_steps)
 
@@ -172,7 +196,8 @@ class Model(pl.LightningModule):
 
 
         if args.distributed_backend == "ddp":
-            step = self.global_step*args.batch_size*len(args.gpus.split(','))*args.gradient_accumulation_steps
+            # step = self.global_step*args.batch_size*len(args.gpus.split(','))*args.gradient_accumulation_steps
+            step = self.global_step*args.batch_size*args.gradient_accumulation_steps
         else:
             step = self.global_step*args.batch_size*args.gradient_accumulation_steps
         
@@ -200,13 +225,13 @@ class Model(pl.LightningModule):
                     'log': tqdm_dict,
                   }
         
-        return results
+
     
 
     def val_dataloader(self):
         return [self.val_dl, self.tr_filter_dl]
 
-    def validation_step(self, batch, batch_nb, dataset_idx):
+    def validation_step(self, batch, batch_nb, dataset_idx=0):
         if dataset_idx == 0:
             input_dict, target_dict = batch
             output_dict = self.forward(input_dict, get_embeddings=True)
@@ -214,13 +239,15 @@ class Model(pl.LightningModule):
             
             logits = output_dict['logits']
             embeddings = output_dict['embeddings']
-
+            # print("t-embedding:",embeddings)
+            # print("logits:",logits)
             preds_conf, preds = torch.max(logits.softmax(1),1)
 
             allowed_classes = self.allowed_classes.to(logits.device)
-
+            # print("allowed_classes:",allowed_classes)
+            # print("out:",logits.gather(1,allowed_classes.repeat(logits.size(0),1)).softmax(1))
             preds_conf_pp, preds_pp = torch.max(logits.gather(1,allowed_classes.repeat(logits.size(0),1)).softmax(1),1)
-            preds_pp = allowed_classes[preds_pp]
+            preds_pp = allowed_classes[preds_pp] # 在allowed_classes 中的预测
 
             targets = target_dict['target']
 
@@ -234,7 +261,8 @@ class Model(pl.LightningModule):
                 'preds_conf_pp':preds_conf_pp,
                 'targets': targets,
                 
-            })    
+            }) 
+            # print("output:",output)   
 
             return output
         else:
@@ -261,12 +289,13 @@ class Model(pl.LightningModule):
         tr_filter_outputs = outputs[1]
 
         out_val = {}
+        # print(val_outputs)
         for key in val_outputs[0].keys():
-            out_val[key] = torch.cat([o[key] for o in val_outputs])
+            out_val[key] = torch.cat([o[key]  for o in val_outputs])
             
         out_tr_filter = {}
         for key in tr_filter_outputs[0].keys():
-            out_tr_filter[key] = torch.cat([o[key] for o in tr_filter_outputs])
+            out_tr_filter[key] = torch.cat([o[key]  for o in tr_filter_outputs])
 
         if args.distributed_backend == "ddp":
             for key in out_val.keys():
@@ -297,8 +326,9 @@ class Model(pl.LightningModule):
 
         val_loss_mean = np.sum(out_val["val_loss"])
 
-
-        vals, inds = get_topk_cossim(out_val["embeddings"], out_tr_filter["embeddings"], k=1, device=device)
+        print(val_score,val_score_landmarks,val_score_pp,val_score_landmarks_pp,val_loss_mean)
+        print("Embeddings: ", out_val["embeddings"], out_tr_filter["embeddings"])
+        vals, inds = get_topk_cossim(out_val["embeddings"], out_tr_filter["embeddings"], batchsize=args.batch_size, k=1, device=device)
         vals = vals.data.cpu().numpy().reshape(-1)
         inds = inds.data.cpu().numpy().reshape(-1)
         labels = pd.Series(out_tr_filter["targets"][inds])
@@ -370,7 +400,7 @@ if __name__ == '__main__':
 
     tr_dl = DataLoader(dataset=tr_ds, batch_size=args.batch_size, sampler=RandomSampler(tr_ds), collate_fn=collate_fn, num_workers=args.num_workers, drop_last=True, pin_memory=False)
 
-    val_dl = DataLoader(dataset=val_ds, batch_size=args.batch_size, sampler=SequentialSampler(val_ds), collate_fn=collate_fn, num_workers=args.num_workers, pin_memory=False)
+    val_dl = DataLoader(dataset=val_ds, batch_size=args.batch_size, sampler=SequentialSampler(val_ds), collate_fn=collate_fn, num_workers=args.num_workers, drop_last=True, pin_memory=False)
 
     tr_filter_ds = GLRDataset(train_filter, normalization=args.normalization, aug=args.val_aug)
     tr_filter_dl = DataLoader(dataset=tr_filter_ds, batch_size=args.batch_size, sampler=SequentialSampler(tr_filter_ds), collate_fn=collate_fn, num_workers=args.num_workers, pin_memory=False)
