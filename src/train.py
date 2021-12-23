@@ -26,7 +26,7 @@ import torch.distributed as dist
 import shutil
 import pickle
 
-count_dict={}
+global count_dict={}
 
 def fix_row(row):#一行一个
     if len(str(row).split()) > 1:
@@ -52,10 +52,10 @@ def setup():
     set_seed(args.seed)
 
     train = pd.read_csv(args.data_path + args.train_csv_fn)
-    count_dict={}
+    global count_dict={}
     train=train[train['landmark_id'].apply(num_filter).to_numpy()].reset_index(drop=True)
 
-    count_dict={}
+    global count_dict={}
     valid = pd.read_csv(args.data_path_valid+ args.valid_csv_fn)
     valid=valid[valid['landmark_id'].apply(num_filter).to_numpy()].reset_index(drop=True)
     
