@@ -18,7 +18,7 @@ args = {
     
     'gpus':1,
     'filter_warnings':True,
-    'logger': 'neptune',
+    'logger': 'tensorboard',
     'num_sanity_val_steps': 50,
 
     'distributed_backend': '',
