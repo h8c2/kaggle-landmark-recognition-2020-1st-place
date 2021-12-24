@@ -63,8 +63,8 @@ def get_topk_cossim(test_emb, tr_emb, batchsize = 64, k=10, device='cuda:0',verb
     test_emb = torch.tensor(test_emb, dtype = torch.float32, device=torch.device(device))
     vals = []
     inds = []
-    print(test_emb)
-    print(test_emb.split(batchsize))
+#     print(test_emb)
+#     print(test_emb.split(batchsize))
     for test_batch in test_emb.split(batchsize):
         sim_mat = cos_similarity_matrix(test_batch, tr_emb)
         vals_batch, inds_batch = torch.topk(sim_mat, k=k, dim=1)
