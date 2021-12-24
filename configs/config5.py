@@ -14,7 +14,7 @@ args = {
     'train_csv_fn':'train.csv',
     'checkpoint_path':'',
     
-    'train_slice':[280000,350000],
+    'train_slice':[280000,370000],
     'valid_slice':[28000,35000],
     
     'filter_warnings':True,
@@ -61,7 +61,7 @@ args = {
     'weight_decay': 1e-4,
     'batch_size': 8,
 
-    'max_epochs': 3,
+    'max_epochs': 5,
 
     'scheduler': {"method": "cosine", "warmup_epochs": 1},
     
@@ -70,7 +70,7 @@ args = {
     'n_classes':81313,
     'data_frac':1.,
     
-    'num_workers': 8,
+    'num_workers': 4,
     
     'crop_size': 600,
 
