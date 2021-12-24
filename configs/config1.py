@@ -10,6 +10,9 @@ args = {
     'valid_csv_fn':'valid.csv',
     'train_csv_fn':'train.csv',
     'checkpoint_path':'',
+    
+    'train_slice':[0,72000]
+    'valid_slice':[0,7000]
 
     'gpus':1,
     'filter_warnings':True, 
