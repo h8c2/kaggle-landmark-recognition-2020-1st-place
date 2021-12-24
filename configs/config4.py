@@ -14,8 +14,8 @@ args = {
     'train_csv_fn':'train.csv',
     'checkpoint_path':'',
     
-    'train_slice':[72000,140000],
-    'valid_slice':[7000,14000],
+    'train_slice':[210000,280000],
+    'valid_slice':[21000,28000],
     
     'filter_warnings':True,
     'logger': 'tensorboard',
