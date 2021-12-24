@@ -18,10 +18,10 @@ args = {
     
     'gpus':1,
     'filter_warnings':True,
-    'logger': 'neptune',
+    'logger': 'tensorboard',
     'num_sanity_val_steps': 0,
 
-    'distributed_backend': 'ddp',
+    'distributed_backend': '',
     'channels_last':False,
 
     'gradient_accumulation_steps':1,
