@@ -78,8 +78,8 @@ def setup():
     train_filter = train[train.landmark_id.isin(valid.landmark_id)].reset_index(drop=True) #选出在验证集的id
     print("trn filter len now", len(train_filter))
     train_filter = train_filter
-    train = pd.concat([train[~train.landmark_id.isin(train_filter.landmark_id)].iloc[:80000,],train_filter]).reset_index(drop=True)
-    valid = pd.concat([valid[~valid.landmark_id.isin(train_filter.landmark_id)].iloc[:7000,],train_filter]).reset_index(drop=True)
+    train = pd.concat([train[~train.landmark_id.isin(train_filter.landmark_id)].iloc[args.train_slice[0]:args.train_slice[1],],train_filter]).reset_index(drop=True)
+    valid = pd.concat([valid[~valid.landmark_id.isin(train_filter.landmark_id)].iloc[args.valid_slice[0]:args.valid_slice[1],],train_filter]).reset_index(drop=True)
     train["img_folder"] = args.img_path_train
     train_filter["img_folder"] = args.img_path_train
     print("train shape", train.shape)
