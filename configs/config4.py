@@ -58,7 +58,7 @@ args = {
     'optimizer': "sgd",
     'lr': 0.05,
     'weight_decay': 1e-4,
-    'batch_size': 16,
+    'batch_size': 8,
 
     'max_epochs': 3,
     
@@ -69,7 +69,7 @@ args = {
     'n_classes':81313,
     'data_frac':1.,
         
-    'num_workers': 8,
+    'num_workers': 4,
     
     'crop_size': 448,
 
