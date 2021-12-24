@@ -60,7 +60,7 @@ args = {
     'optimizer': "sgd",
     'weight_decay':1e-4,
     'lr': 0.05,
-    'batch_size': 12,
+    'batch_size': 8,
     'max_epochs': 3,
     'scheduler': {"method":"cosine","warmup_epochs": 1},
     
