@@ -5,24 +5,29 @@ abs_path = os.path.dirname(__file__)
 
 args = {
     'model_path':'../models/',
-    'data_path':'/ssd/kaggle_landmark/input/',
-    'data_path_2019':'/ssd/kaggle_landmark/2019/',
-    'valid_csv_fn':'recognition_solution_v2.1.csv',
+    'data_path':'/kaggle/input/landmark-recognition-2021/',
+    'data_path_valid':'/kaggle/input/google-landmark-2021-validation/',
+    'valid_csv_fn':'valid.csv',
     'train_csv_fn':'train.csv',
+    'checkpoint_path':'',
     
-
-    'gpus':'0,1',
+    'train_slice':[140000,210000],
+    'valid_slice':[14000,21000],
+    
+    'gpus':1,
     'filter_warnings':True,
-    'logger': 'neptune',
+    'logger': 'tensorboard',
     'num_sanity_val_steps': 0,
+
+
     'drop_last_n':0,
     'train_min_count':0,
     'hardmining':False,
 
-    'distributed_backend': 'ddp',
+    'distributed_backend': '',
 
-    'gradient_accumulation_steps':6,
-    'precision':16,
+    'gradient_accumulation_steps':1,
+    'precision':32,
     'sync_batchnorm':False,
     'drop_last_n':0,
 
@@ -55,7 +60,7 @@ args = {
     'optimizer': "sgd",
     'weight_decay':1e-4,
     'lr': 0.05,
-    'batch_size': 32,
+    'batch_size': 16,
     'max_epochs': 10,
     'scheduler': {"method":"cosine","warmup_epochs": 1},
     
