@@ -51,6 +51,7 @@ class GLRDataset(Dataset):
             img = self.load_one(id_, img_folder_)
             
         if self.aug:
+            img = img.astype(np.uint8)
             img = self.augment(img)
                 
         img = img.astype(np.float32)       
