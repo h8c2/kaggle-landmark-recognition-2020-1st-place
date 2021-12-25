@@ -4,12 +4,12 @@ import albumentations as A
 abs_path = os.path.dirname(__file__)
 
 args = {
-  'model_path':'../models/',
-    'data_path':'E:/download/.kaggle/landmark-recognition-2021/',
-    'data_path_valid':'E:/download/.kaggle/google-landmark-2021-validation/',
+    'model_path':'../models/',
+    'data_path':'/kaggle/input/landmark-recognition-2021/',
+    'data_path_valid':'/kaggle/input/google-landmark-2021-validation/',
     'valid_csv_fn':'valid.csv',
     'train_csv_fn':'train.csv',
-    'checkpoint_path':'E:/download/.kaggle/res2net101_26w_4s-02a759a1.pth',
+    'checkpoint_path':'',
     
     'train_slice':[480000,540000],
     'valid_slice':[60000,66000],
